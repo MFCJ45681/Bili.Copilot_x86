@@ -98,7 +98,9 @@ public sealed partial class PlayerViewModel
 
             if (decodeType == PreferDecodeType.Auto)
             {
-                await Client.SetVideoOutputAsync(VideoOutputType.GpuNext);
+                // 核显 (Intel/AMD) 上 gpu-next + d3d11va 零拷贝易失败并反复重试，表现为卡顿/掉帧。
+                // vo=gpu 开销更低且兼容性更好；hwdec=auto 仅在白名单解码器中挑选，失败时回退软解。
+                await Client.SetVideoOutputAsync(VideoOutputType.Gpu);
                 await Client.SetGpuApiAsync(GpuApiType.D3D11);
                 await Client.SetGpuContextAsync(GpuContextType.Auto);
                 await Client.SetHardwareDecodeAsync(HardwareDecodeType.Auto);

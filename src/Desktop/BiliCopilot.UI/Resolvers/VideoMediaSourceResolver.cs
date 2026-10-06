@@ -191,7 +191,8 @@ internal sealed partial class VideoMediaSourceResolver(IPlayerService playerServ
         var videoUrl = vSeg?.BaseUrl;
         var audioUrl = aSeg?.BaseUrl;
 
-        if (SettingsToolkit.ReadLocalSetting(SettingNames.PlayWithoutP2P, false))
+        // 默认禁用 P2P(PCDN)：mpv 不支持 B站 PCDN 握手，直连 PCDN 地址会 403/长时间 Loading。
+        if (SettingsToolkit.ReadLocalSetting(SettingNames.PlayWithoutP2P, true))
         {
             if (vSeg?.BackupUrls is not null)
             {
