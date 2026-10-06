@@ -22,6 +22,7 @@ public sealed partial class PlayerInteractivePanel : PlayerControlBase
     private bool _isLeftButton;
     private bool _isRightButton;
     private bool _isHolding;
+    private bool _isTouchpadGesture;
 
     public PlayerInteractivePanel()
     {
@@ -367,6 +368,7 @@ public sealed partial class PlayerInteractivePanel : PlayerControlBase
         // 停止所有计时器
         _holdTimer.Stop();
         _tapTimer.Stop();
+        _isTouchpadGesture = false;
 
         // 如果正在倍速播放，恢复正常速度
         if (_isHolding)
@@ -394,7 +396,29 @@ public sealed partial class PlayerInteractivePanel : PlayerControlBase
     }
 
     private void CheckPointerType(PointerRoutedEventArgs e)
-        => _isTouch = e.Pointer.PointerDeviceType is Microsoft.UI.Input.PointerDeviceType.Touch or Microsoft.UI.Input.PointerDeviceType.Pen;
+    {
+        _isTouch = TouchAdaptToolkit.ShouldTreatAsTouch(e.Pointer.PointerDeviceType);
+
+        if (_isTouch)
+        {
+            // 首次收到真实触摸输入即切换为触控场景，后续加载的控件会放大热区。
+            TouchAdaptToolkit.NotifyTouchInput();
+        }
+
+        // 触控板会以 Mouse 类型上报，但其双指手势应按触摸语义处理：
+        // 与触屏一致的"点按显控制、双击播放/暂停"更符合平板操作预期。
+        // 判据是无按键按下(鼠标拖动必然按下左键)。
+        if (!_isTouch && e.Pointer.PointerDeviceType is Microsoft.UI.Input.PointerDeviceType.Mouse)
+        {
+            var props = e.GetCurrentPoint(this).Properties;
+            _isTouchpadGesture = !props.IsLeftButtonPressed && !props.IsRightButtonPressed;
+            _isTouch = _isTouchpadGesture;
+        }
+        else
+        {
+            _isTouchpadGesture = false;
+        }
+    }
 
     /// <summary>
     /// Interactive area types.

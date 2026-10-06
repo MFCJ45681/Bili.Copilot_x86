@@ -65,6 +65,9 @@ public partial class App : Application
 
             instance.Activated += OnInstanceActivated;
             Richasy.WinUIKernel.Share.Base.ImageExBase.EnableBackgroundDecoding = false;
+
+            // 触控/触控板环境探测：纯触屏平板需放大控件命中区域。
+            BiliCopilot.UI.Toolkits.TouchAdaptToolkit.Initialize();
             GlobalDependencies.Initialize();
             GlobalDependencies.Kernel.GetRequiredService<AppViewModel>().LaunchCommand.Execute(default);
         }

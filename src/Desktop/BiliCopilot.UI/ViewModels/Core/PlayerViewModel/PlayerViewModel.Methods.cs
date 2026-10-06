@@ -214,8 +214,9 @@ public sealed partial class PlayerViewModel
                 await Client.SetAudioExclusiveAsync(audioExclusive);
             }
 
-            var logLevel = SettingsToolkit.ReadLocalSetting(SettingNames.MpvLogLevel, MpvLogLevel.Warn);
-            await Client.SetLogLevelAsync(logLevel);
+            // 临时诊断: OpenSSL lock != NULL 崩溃取证, 取完日志需还原为读取设置.
+            // 注意: ReadLocalSetting 会命中已持久化的旧值(Warn), 此处强制 Debug.
+            await Client.SetLogLevelAsync(MpvLogLevel.Debug);
             await Client.UseIdleAsync(true);
             await Client.UseKeepOpenAsync(true);
             await Client.SetTlsVerifyAsync(false);

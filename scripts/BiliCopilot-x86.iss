@@ -2,11 +2,11 @@
 ; Wraps signed MSIX: imports dev cert, then Add-AppxPackage
 
 #define AppName "哔哩助理 Bili Copilot"
-#define AppVersion "0.0.7"
+#define AppVersion "0.0.8"
 #define AppPublisher "Richasy"
 #define OutputDir "F:\Users\Administrator\Desktop\WorkBuddy\installer-output"
-#define MsixDir "F:\Users\Administrator\Desktop\WorkBuddy\msix-output\BiliCopilot.UI_0.0.7.0_x86_Publish_Test"
-#define MsixName "BiliCopilot.UI_0.0.7.0_x86_Publish.msix"
+#define MsixDir "F:\Users\Administrator\Desktop\WorkBuddy\msix-output\BiliCopilot.UI_0.0.8.0_x86_Publish_Test"
+#define MsixName "BiliCopilot.UI_0.0.8.0_x86_Publish.msix"
 #define CerFile "F:\Users\Administrator\Desktop\WorkBuddy\Bili.Copilot\scripts\cert\BiliCopilot.cer"
 #define Aumid "Richasy.BiliCopilot.Dev_g7ew4fxhv1f46!App"
 

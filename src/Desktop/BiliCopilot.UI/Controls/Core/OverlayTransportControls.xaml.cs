@@ -30,6 +30,9 @@ public sealed partial class OverlayTransportControls : PlayerControlBase
         _progressChangeTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(0.5) };
         _speedChangeTimer.Tick += OnSpeedChangeTick;
         _progressChangeTimer.Tick += OnProgressChangeTick;
+
+        // 触摸环境可能在控件加载后才被识别，订阅事件以便补做热区放大。
+        TouchAdaptToolkit.TouchEnvironmentEntered += OnTouchEnvironmentEntered;
     }
 
     public object LeftElement
@@ -52,7 +55,51 @@ public sealed partial class OverlayTransportControls : PlayerControlBase
 
     protected override void OnControlLoaded()
     {
+        ApplyTouchAdaptation();
         BalanceLeftRightWidth();
+    }
+
+    /// <summary>
+    /// 触控环境被识别后补做一次热区放大.
+    /// </summary>
+    private void OnTouchEnvironmentEntered()
+        => ApplyTouchAdaptation();
+
+    /// <summary>
+    /// 平板/触屏环境放大控件命中区域.
+    /// </summary>
+    private void ApplyTouchAdaptation()
+    {
+        if (!TouchAdaptToolkit.IsTouchPrimary)
+        {
+            return;
+        }
+
+        foreach (var button in new[]
+        {
+            PrevButton,
+            BackwardButton,
+            PlayPauseButton,
+            ForwardButton,
+            NextButton,
+            SpeedButton,
+            SubtitleButton,
+            DanmakuOptionButton,
+            CompactOverlayButton,
+            FullScreenButton,
+        })
+        {
+            TouchAdaptToolkit.EnsureTouchTarget(button);
+        }
+
+        // Slider 的命中区随控件高度增长，扩大高度即可提升触控可拖性(不改变轨道视觉)。
+        foreach (var slider in new[] { ProgressSlider, ProgressSliderFake })
+        {
+            if (slider.ActualHeight > 0 && slider.ActualHeight < TouchAdaptToolkit.MinTouchTargetSize)
+            {
+                slider.Height = TouchAdaptToolkit.MinTouchTargetSize;
+            }
+        }
     }
 
     protected override void OnViewModelChanged(PlayerViewModel? oldValue, PlayerViewModel? newValue)

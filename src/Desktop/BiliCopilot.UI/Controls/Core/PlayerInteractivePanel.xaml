@@ -351,7 +351,7 @@
         </MenuFlyout>
     </FlyoutBase.AttachedFlyout>
 
-    <Grid>
+    <Grid ManipulationMode="All">
         <Rectangle
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
@@ -360,7 +360,9 @@
         <Border Visibility="{x:Bind ViewModel.Player.IsCompactOverlay, Mode=OneWay, Converter={StaticResource BoolToVisibilityReverseConverter}}">
             <Border Visibility="{x:Bind ViewModel.IsControlsVisible, Mode=OneWay}">
                 <Button
-                    Margin="0,0,16,0"
+                    Margin="0,0,8,0"
+                    MinWidth="40"
+                    MinHeight="40"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center"
                     AutomationProperties.Name="{ext:Locale Name=ShowMenu}"
@@ -368,7 +370,7 @@
                     Style="{StaticResource SidePlayerButtonStyle}"
                     ToolTipService.ToolTip="{ext:Locale Name=ShowMenu}"
                     Visibility="{x:Bind ViewModel.IsTouchControlsVisible, Mode=OneWay}">
-                    <ic:FluentIcon FontSize="14" Icon="HandPoint" />
+                    <ic:FluentIcon FontSize="18" Icon="HandPoint" />
                 </Button>
             </Border>
         </Border>
