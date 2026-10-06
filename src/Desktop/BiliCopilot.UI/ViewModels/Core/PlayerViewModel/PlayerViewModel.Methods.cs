@@ -77,7 +77,7 @@ public sealed partial class PlayerViewModel
             }
 
             var configPath = string.Empty;
-            var decodeType = SettingsToolkit.ReadLocalSetting(SettingNames.PreferDecode, PreferDecodeType.Auto);
+            var decodeType = SettingsToolkit.ReadLocalSetting(SettingNames.PreferDecode, PreferDecodeType.Custom);
             if (decodeType == PreferDecodeType.Custom)
             {
                 configPath = await AppToolkit.EnsureMpvConfigExistAsync();

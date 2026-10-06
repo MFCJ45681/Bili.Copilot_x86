@@ -162,9 +162,33 @@ internal sealed partial class AppToolkit : SharedAppToolkit
     {
         var localFolder = Microsoft.Windows.Storage.ApplicationData.GetDefault().LocalFolder;
         var destPath = Path.Combine(localFolder.Path, "mpv.conf");
-        if (!File.Exists(destPath))
+        var defaultConfig = await StorageFile.GetFileFromApplicationUriAsync(new("ms-appx:///Assets/basic-mpv.conf"));
+
+        // 内容与包内不一致时同步，覆盖旧版本遗留的 mpv.conf（如上游默认 6 行版本）；
+        // 用户手动修改过的配置内容与包内不同，会被保留，不会被覆盖。
+        string defaultContent;
+        using (var stream = await defaultConfig.OpenStreamForReadAsync())
+        using (var reader = new StreamReader(stream))
         {
-            var defaultConfig = await StorageFile.GetFileFromApplicationUriAsync(new("ms-appx:///Assets/basic-mpv.conf"));
+            defaultContent = await reader.ReadToEndAsync();
+        }
+
+        var needSync = !File.Exists(destPath);
+        if (!needSync)
+        {
+            try
+            {
+                var currentContent = await File.ReadAllTextAsync(destPath);
+                needSync = !string.Equals(currentContent.Trim(), defaultContent.Trim(), StringComparison.Ordinal);
+            }
+            catch
+            {
+                needSync = true;
+            }
+        }
+
+        if (needSync)
+        {
             await defaultConfig.CopyAsync(localFolder, "mpv.conf", NameCollisionOption.ReplaceExisting).AsTask();
         }
 

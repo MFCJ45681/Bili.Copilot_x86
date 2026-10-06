@@ -83,12 +83,12 @@ public sealed partial class SettingsPageViewModel : AISettingsViewModelBase
         TempPlaybackRate = SettingsToolkit.ReadLocalSetting(SettingNames.TempPlaybackRate, 3.0);
         try
         {
-            PreferDecode = SettingsToolkit.ReadLocalSetting(SettingNames.PreferDecode, PreferDecodeType.Auto);
+            PreferDecode = SettingsToolkit.ReadLocalSetting(SettingNames.PreferDecode, PreferDecodeType.Custom);
         }
         catch (Exception)
         {
-            SettingsToolkit.WriteLocalSetting(SettingNames.PreferDecode, PreferDecodeType.Auto);
-            PreferDecode = PreferDecodeType.Auto;
+            SettingsToolkit.WriteLocalSetting(SettingNames.PreferDecode, PreferDecodeType.Custom);
+            PreferDecode = PreferDecodeType.Custom;
         }
 
         MTCBehavior = SettingsToolkit.ReadLocalSetting(SettingNames.MTCBehavior, MTCBehavior.Automatic);
