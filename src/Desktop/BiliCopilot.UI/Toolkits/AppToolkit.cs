@@ -172,30 +172,6 @@ internal sealed partial class AppToolkit : SharedAppToolkit
     }
 
     /// <summary>
-    /// 确保全局性能 / 同步基线配置文件（mpv-perf.conf）存在于本地目录，并返回其路径.
-    /// 该配置文件在所有解码模式下均会加载，用于修复音视频不同步、卡顿与掉帧.
-    /// 注意: 此文件由应用托管(非用户自定义)，每次启动均以包内最新版本覆盖，
-    /// 否则版本升级后的调优项不会生效；用户自定义配置请使用 mpv.conf.
-    /// </summary>
-    /// <returns>配置文件路径；若部署失败则返回空字符串.</returns>
-    public static async Task<string> EnsureMpvPerfConfigExistAsync()
-    {
-        var localFolder = Microsoft.Windows.Storage.ApplicationData.GetDefault().LocalFolder;
-        var destPath = Path.Combine(localFolder.Path, "mpv-perf.conf");
-        try
-        {
-            var defaultConfig = await StorageFile.GetFileFromApplicationUriAsync(new("ms-appx:///Assets/mpv-perf.conf"));
-            await defaultConfig.CopyAsync(localFolder, "mpv-perf.conf", NameCollisionOption.ReplaceExisting).AsTask();
-        }
-        catch
-        {
-            return string.IsNullOrEmpty(destPath) ? string.Empty : File.Exists(destPath) ? destPath : string.Empty;
-        }
-
-        return destPath;
-    }
-
-    /// <summary>
     /// 获取WebDav服务器地址.
     /// </summary>
     /// <returns>地址.</returns>

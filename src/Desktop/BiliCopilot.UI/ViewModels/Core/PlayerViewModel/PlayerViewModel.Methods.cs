@@ -83,9 +83,6 @@ public sealed partial class PlayerViewModel
                 configPath = await AppToolkit.EnsureMpvConfigExistAsync();
             }
 
-            // 性能 / 同步基线配置：所有解码模式均加载，用于修复音视频不同步、卡顿、掉帧.
-            var perfConfigPath = await AppToolkit.EnsureMpvPerfConfigExistAsync();
-
             var options = new MpvInitializeOptions
             {
                 UseConfig = false,
@@ -98,9 +95,7 @@ public sealed partial class PlayerViewModel
 
             if (decodeType == PreferDecodeType.Auto)
             {
-                // 核显 (Intel/AMD) 上 gpu-next + d3d11va 零拷贝易失败并反复重试，表现为卡顿/掉帧。
-                // vo=gpu 开销更低且兼容性更好；hwdec=auto 仅在白名单解码器中挑选，失败时回退软解。
-                await Client.SetVideoOutputAsync(VideoOutputType.Gpu);
+                await Client.SetVideoOutputAsync(VideoOutputType.GpuNext);
                 await Client.SetGpuApiAsync(GpuApiType.D3D11);
                 await Client.SetGpuContextAsync(GpuContextType.Auto);
                 await Client.SetHardwareDecodeAsync(HardwareDecodeType.Auto);
@@ -139,12 +134,6 @@ public sealed partial class PlayerViewModel
             }
 
             await Client.SetMuteAsync(IsMute);
-
-            // 先加载性能 / 同步基线配置（video-sync / interpolation / cache-secs 等），对所有解码模式生效.
-            if (!string.IsNullOrEmpty(perfConfigPath))
-            {
-                await Client.SetConfigFileAsync(perfConfigPath);
-            }
 
             if (!string.IsNullOrEmpty(configPath))
             {
