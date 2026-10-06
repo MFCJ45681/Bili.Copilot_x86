@@ -1,0 +1,14 @@
+gen_mapping: auto-locate the main AOT exe by mtime
+
+The MSBuild appxrecipe does not contain the AOT main executable, so it had
+to be appended by hand. That step kept pointing at a stale path
+(bin/Release/.../publish, left over from a build without the Platform
+property), which silently shipped an old exe inside the package: the managed
+DLLs were current but the main program was not, so source changes appeared to
+have no effect (e.g. the forced mpv Debug log level still reported Warn).
+
+The script now walks src/Desktop/BiliCopilot.UI/bin for */publish/
+BiliCopilot.UI.exe and appends the most recently modified one, removing the
+manual step and the stale-artifact class of bug. It warns if none is found.
+
+Also repacked and reinstalled 0.0.8.0 with the correct exe.
